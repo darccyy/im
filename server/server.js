@@ -34,19 +34,44 @@ const server = app.listen(app.get("port"), () => {
 
 // Socket
 const io = require("socket.io")(server);
-var app_socket = io.of("/im");
+var app_socket = io.of("/");
 app_socket.on("connection", function (socket) {
   console.log("Client connected");
+  var currentRoomId;
 
   socket.on("disconnect", function () {
     console.log("Client disconnected");
+    // Update count for old room
+    updateRoomCount(currentRoomId);
   });
 
   socket.on("join", function (room) {
+    // Instead of socket.leaveAll - individual (leave, then send count to old room)
+    socket.rooms.forEach(oldRoom => {
+      socket.leave(oldRoom);
+      updateRoomCount(oldRoom);
+    });
+
+    // Join new room
     socket.join(room);
+    currentRoomId = room;
+
+    // Update count to new room
+    updateRoomCount(room);
   });
 
   socket.on("msg", function (room, data) {
-    io.of("/im").to(room).emit("msg", data);
+    io.of("/").to(room).emit("msg", data);
   });
 });
+
+function updateRoomCount(room) {
+  io.of("/")
+    .to(room)
+    .emit(
+      "count",
+      io.sockets.adapter.rooms.has(room)
+        ? io.sockets.adapter.rooms.get(room).size
+        : 0,
+    );
+}

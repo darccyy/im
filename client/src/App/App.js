@@ -14,6 +14,7 @@ export default class App extends Component {
         ? localStorage.room
         : "root",
     log: [],
+    count: null,
   };
   socket = null;
 
@@ -55,7 +56,7 @@ export default class App extends Component {
 
   componentDidMount() {
     // Setup socket
-    this.socket = io.connect("/im");
+    this.socket = io.connect("/");
     this.socket.emit("join", this.state.room);
     this.socket = this.socket.on("connect", function () {
       console.log("! Server connect");
@@ -68,6 +69,12 @@ export default class App extends Component {
     this.socket.on("msg", data => {
       console.log("MSG", data);
       this.setState({ log: [...this.state.log, data] });
+    });
+
+    // Update count of clients in current room
+    this.socket.on("count", count => {
+      console.log("COUNT", count);
+      this.setState({ count });
     });
 
     // Set default values for name and room, also in title
@@ -104,6 +111,13 @@ export default class App extends Component {
             }}
           />
         </h2>
+
+        <p>
+          Count:{" "}
+          {this.state.count || this.state.count === 0
+            ? this.state.count
+            : "-"}
+        </p>
 
         <ul>
           <li>

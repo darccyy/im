@@ -1,0 +1,14 @@
+{
+  "short_name": "IM",
+  "name": "Instant Messenger",
+  "icons": [
+    {
+      "src": "./image/icon.png",
+      "type": "image/png"
+    }
+  ],
+  "start_url": "./index.html",
+  "display": "standalone",
+  "theme_color": "#FFFFFF",
+  "background_color": "#000000"
+}

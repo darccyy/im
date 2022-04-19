@@ -1,0 +1,9 @@
+# Too big to upload
+node_modules
+build
+
+# Create any tests in ./temp
+temp
+
+# If a .env file is added
+.env

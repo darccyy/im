@@ -63,15 +63,19 @@ app_socket.on("connection", function (socket) {
   socket.on("msg", function (room, data) {
     io.of("/").to(room).emit("msg", data);
   });
+
+  // Manual check
+  socket.on("checkcount", function (room) {
+    socket.emit("count", getRoomCount(room));
+  });
 });
 
 function updateRoomCount(room) {
-  io.of("/")
-    .to(room)
-    .emit(
-      "count",
-      io.sockets.adapter.rooms.has(room)
-        ? io.sockets.adapter.rooms.get(room).size
-        : 0,
-    );
+  io.of("/").to(room).emit("count", getRoomCount(room));
+}
+
+function getRoomCount(room) {
+  return io.sockets.adapter.rooms.has(room)
+    ? io.sockets.adapter.rooms.get(room).size
+    : 0;
 }

@@ -81,6 +81,11 @@ export default class App extends Component {
     $("#name").text(this.state.name);
     $("#room").text(this.state.room);
     this.updateTitle();
+
+    // Update room count periodically
+    setInterval(() => {
+      this.socket.emit("checkcount", this.state.room);
+    }, 2 * 1000);
   }
 
   render() {
@@ -94,7 +99,7 @@ export default class App extends Component {
           /
           <span
             id="room"
-            className="edit"
+            className="edit hasPlaceholder"
             contentEditable
             spellCheck={false}
             onKeyDown={event => {
@@ -110,13 +115,18 @@ export default class App extends Component {
               });
             }}
           />
+          {/* For previous span when empty */}
+          <span
+            className="placeholder"
+            onClick={event => event.target.previousSibling.focus()}
+          >
+            room
+          </span>
         </h2>
 
         <p>
           Count:{" "}
-          {this.state.count || this.state.count === 0
-            ? this.state.count
-            : "-"}
+          {this.state.count || this.state.count === 0 ? this.state.count : "-"}
         </p>
 
         <ul>

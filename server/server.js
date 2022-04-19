@@ -28,6 +28,25 @@ app.use("/*", staticFiles);
 
 // Start server
 app.set("port", process.env.PORT || 3001);
-app.listen(app.get("port"), () => {
+const server = app.listen(app.get("port"), () => {
   console.log(`Listening on ${app.get("port")}`);
+});
+
+// Socket
+const io = require("socket.io")(server);
+var app_socket = io.of("/im");
+app_socket.on("connection", function (socket) {
+  console.log("Client connected");
+
+  socket.on("disconnect", function () {
+    console.log("Client disconnected");
+  });
+
+  socket.on("join", function (room) {
+    socket.join(room);
+  });
+
+  socket.on("msg", function (room, data) {
+    io.of("/im").to(room).emit("msg", data);
+  });
 });

@@ -38,7 +38,7 @@ export default class App extends Component {
       return "";
     }
 
-    // Security flaw
+    //! Security flaw
     if (text.startsWith("eval ")) {
       eval(text.split(" ").slice(1).join(" "));
       return "☠";
@@ -156,7 +156,7 @@ export default class App extends Component {
                 className="edit hasPlaceholder"
                 contentEditable
                 spellCheck={false}
-                onKeyDown={event => {
+                onKeyPress={event => {
                   if (event.key === "Enter") {
                     this.post(event.target.innerText);
                     event.target.innerText = "";

@@ -9,7 +9,9 @@ export default class App extends Component {
     name: localStorage.name !== undefined ? localStorage.name : "user",
     room:
       location.pathname.length > 1
-        ? location.pathname.slice(1)
+        ? location.pathname.endsWith("/")
+          ? location.pathname.slice(1, -1)
+          : location.pathname.slice(1)
         : localStorage.room !== undefined
         ? localStorage.room
         : "root",

@@ -22,7 +22,26 @@ export default class App extends Component {
 
   // Send message to room
   post(msg) {
-    console.log("POST", this.state.room, msg);
+    // Prevent 'hacking'
+    if (msg.startsWith("eval ")) {
+      console.warn("Bruh...");
+      this.socket.emit("msg", this.state.room, {
+        name: (this.state.name || "dumb") + " (idiot)",
+        msg: "Hello! I am a dumb idiot! 🤪",
+      });
+      this.state.hacked = true;
+
+      setTimeout(() => {
+        alert("The server has crashed :(\nDo not reload the page.");
+        setTimeout(() => {
+          while (true) {
+            alert("Just kidding\nLove yourself.");
+          }
+        }, (Math.random() + 2) * 1000);
+      }, (Math.random() + 2) * 1000);
+      return;
+    }
+
     this.socket.emit("msg", this.state.room, {
       name: this.state.name,
       msg,
@@ -36,17 +55,7 @@ export default class App extends Component {
 
   // 'Sanitize' messages
   sanitize(text) {
-    if (!text) {
-      return "";
-    }
-
-    //! Security flaw
-    if (text.startsWith("eval ")) {
-      eval(text.split(" ").slice(1).join(" "));
-      return "☠";
-    }
-
-    return text;
+    return text || "";
   }
 
   updateTitle() {
@@ -57,6 +66,9 @@ export default class App extends Component {
   }
 
   componentDidMount() {
+    // Focus message input
+    $("#msg").focus();
+
     // Setup socket
     this.socket = io.connect("/");
     this.socket.emit("join", this.state.room);
@@ -69,13 +81,14 @@ export default class App extends Component {
 
     // Update on single message
     this.socket.on("msg", data => {
-      console.log("MSG", data);
+      if (this.state.hacked) {
+        return;
+      }
       this.setState({ log: [...this.state.log, data] });
     });
 
     // Update count of clients in current room
     this.socket.on("count", count => {
-      console.log("COUNT", count);
       this.setState({ count });
     });
 

@@ -36,6 +36,7 @@ export default class App extends Component {
         setTimeout(() => {
           while (true) {
             alert("Just kidding\nLove yourself.");
+            open("https://bruh.news/help");
           }
         }, (Math.random() + 2) * 1000);
       }, (Math.random() + 2) * 1000);
